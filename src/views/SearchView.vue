@@ -1,26 +1,19 @@
 <script setup>
-import VueFeather from "vue-feather";
 import Wrapper from "@/components/Wrapper.vue";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
-const search = ref("");
-const router = useRouter();
-
-const searchHandler = () => {
-  if (search.value.trim() !== "") {
-    router.push({ path: "/search", query: { q: search.value } });
-  }
-};
+const route = useRoute();
+const searchQuery = route.query.q;
 </script>
 
 <template>
   <Wrapper>
     <template #header>
-      <form @submit.prevent="searchHandler" class="form-control">
-        <input type="text" v-model="search" placeholder="Search for photo" />
-        <vue-feather type="search" size="16" stroke="2" class="search-icon" />
-      </form>
+      <h1 v-if="searchQuery?.length > 0">
+        Search Results for <span>&quot;{{ searchQuery }}&quot;</span>
+      </h1>
+
+      <h1 v-else>No search query</h1>
     </template>
 
     <template #main>
@@ -45,28 +38,13 @@ const searchHandler = () => {
 </template>
 
 <style lang="scss" scoped>
-.form-control {
+h1 {
+  color: #15054f;
+  text-align: left;
   width: 100%;
-  max-width: 1280px;
-  position: relative;
 
-  input {
-    width: 100%;
-    padding: 1.2rem 4rem;
-    outline: none;
-    border: none;
-    border-radius: 0.3rem;
-
-    &::placeholder {
-      color: #504b4bff;
-    }
-  }
-
-  .search-icon {
-    stroke: #656060ff;
-    position: absolute;
-    left: 1.5rem;
-    top: 1.2rem;
+  span {
+    color: #6b6b6b;
   }
 }
 
