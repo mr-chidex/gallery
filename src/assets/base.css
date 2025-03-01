@@ -3,3 +3,9 @@
   margin: 0;
   padding: 0;
 }
+
+:root {
+  --background-primary: #dee5eb;
+  --color-primary: #333;
+  --color-secondary: #fff;
+}

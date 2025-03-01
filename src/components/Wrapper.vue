@@ -5,12 +5,14 @@
 
   <main>
     <slot name="main" />
+
+    <slot />
   </main>
 </template>
 
 <style lang="scss" scoped>
 .header {
-  background: #dee5eb;
+  background: var(--background-primary);
   height: 14rem;
   display: grid;
   place-items: center;
