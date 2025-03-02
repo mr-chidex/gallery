@@ -12,21 +12,20 @@ export const getAllPhotos = async (page = 1, perPage = 10) => {
     const response = await unsplashApi.get("/photos", {
       params: { page, per_page: perPage },
     });
+
     return response.data;
   } catch (error) {
-    console.error("Error fetching photos:", error);
-    return [];
+    return { total: 0, results: [] };
   }
 };
 
-export const searchPhotos = async (query) => {
+export const searchPhotos = async (query, page = 1, per_page = 20) => {
   try {
     const response = await unsplashApi.get("/search/photos", {
-      params: { query, per_page: 10 },
+      params: { query, per_page, page },
     });
-    return response.data.results;
+    return { total: response.data?.total, results: response.data?.results };
   } catch (error) {
-    console.error("Error fetching photos:", error);
-    return [];
+    return { total: 0, results: [] };
   }
 };

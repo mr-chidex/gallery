@@ -1,9 +1,49 @@
 <script setup>
 import Wrapper from "@/components/Wrapper.vue";
+import SkeletonLoader from "@/components/SkeletonLoader.vue";
+import MasonryItem from "@/components/MansoryItem.vue";
 import { useRoute } from "vue-router";
+import { onMounted, ref, nextTick } from "vue";
+import { searchPhotos } from "@/utils/api";
+import { assignRowSpans } from "@/utils/handlers";
+import ImageSlider from "@/components/ImageSlider.vue";
 
 const route = useRoute();
 const searchQuery = route.query.q;
+const photos = ref([]);
+const loading = ref(false);
+const page = ref(1);
+const totalResult = ref(false);
+const isNoMore = ref(false);
+const showSlider = ref(false);
+const currentIndex = ref(0);
+
+const fetchPhotos = async () => {
+  if (loading.value) return;
+  loading.value = true;
+
+  if (!searchQuery) return;
+  const { total, results } = await searchPhotos(searchQuery, page, 20);
+  totalResult.value = total;
+
+  if (results?.length > 0) {
+    photos.value.push(...results);
+    page.value++;
+    nextTick(assignRowSpans);
+  }
+
+  loading.value = false;
+};
+
+const openSlider = (index) => {
+  currentIndex.value = index;
+  showSlider.value = true;
+};
+
+onMounted(async () => {
+  await fetchPhotos();
+  isNoMore.value = photos.value.length >= totalResult?.value;
+});
 </script>
 
 <template>
@@ -17,22 +57,41 @@ const searchQuery = route.query.q;
     </template>
 
     <template #main>
-      <div class="card-container">
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
-        <div class="card-container_card"></div>
+      <div class="masonry-grid">
+        <MasonryItem
+          v-for="(photo, index) in photos"
+          :key="photo.id"
+          :photo="photo"
+          :assignRowSpans="assignRowSpans"
+          @click="openSlider(index)"
+        />
       </div>
+
+      <div v-if="loading && photos.length === 0" class="skeleton-container">
+        <SkeletonLoader v-for="n in 6" :key="n" />
+      </div>
+
+      <!-- Image Slider Modal -->
+      <ImageSlider
+        v-if="showSlider"
+        :photos="photos"
+        :currentIndex="currentIndex"
+        @close="showSlider = false"
+      />
+
+      <div v-if="!loading && photos.length === 0" class="empty">
+        <p>No photo available at this moment.</p>
+      </div>
+
+      <button
+        v-show="!loading && photos.length > 0 && !isNoMore"
+        type="button"
+        @click="fetchPhotos"
+        :disabled="loading"
+        class="load-btn"
+      >
+        {{ loading ? "Loading..." : "Load More" }}
+      </button>
     </template>
   </Wrapper>
 </template>
@@ -48,17 +107,45 @@ h1 {
   }
 }
 
-.card-container {
-  column-count: 3;
+.masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: auto;
+  row-gap: 4px;
   column-gap: 3rem;
+}
 
-  &_card {
-    break-inside: avoid;
-    background: #ccc;
-    margin-bottom: 16px;
-    padding: 16px;
-    border-radius: 0.5rem;
-    min-height: 20rem;
+.load-btn {
+  background: var(--background-primary);
+  color: var(--color-primary);
+  font-weight: bold;
+  padding: 0.5rem 3rem;
+  border: none;
+  display: block;
+  margin: 4rem auto;
+  text-align: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+    color: var(--color-secondary);
   }
+}
+
+.empty {
+  text-align: center;
+  margin-top: 4rem;
+  display: grid;
+  place-items: center;
+}
+
+.skeleton-container {
+  column-count: 3;
+  column-gap: 10px;
+  row-gap: 10px;
+  column-gap: 3rem;
 }
 </style>

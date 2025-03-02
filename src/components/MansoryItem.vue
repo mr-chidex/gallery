@@ -32,6 +32,9 @@ defineProps({
   display: flex;
   flex-direction: column;
   grid-row-end: span var(--rows);
+  margin-bottom: 1rem;
+  background: linear-gradient(-90deg, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+  height: fit-content;
 }
 
 .masonry-item__image-container {
@@ -39,8 +42,9 @@ defineProps({
   width: 100%;
   transition: all 0.3s ease-in-out;
   cursor: zoom-in;
-  overflow: hidden;
   border-radius: 0.5rem;
+  height: auto;
+  overflow: hidden;
 
   &:hover .masonry-item__overlay {
     display: none;
@@ -51,8 +55,9 @@ defineProps({
   width: 100%;
   border-radius: 0.5rem;
   display: block;
-  height: auto;
+  height: 100%;
   transition: transform 0.3s ease-in-out;
+  object-fit: cover;
 
   &:hover {
     transform: scale(1.1);

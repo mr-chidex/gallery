@@ -9,7 +9,7 @@
 <script setup>
 import { ref } from "vue";
 
-const randomHeight = ref(Math.floor(Math.random() * (30 - 25 + 1)) + 20);
+const randomHeight = ref(Math.floor(Math.random() * 5) + 20);
 </script>
 
 <style lang="scss" scoped>
@@ -21,7 +21,8 @@ const randomHeight = ref(Math.floor(Math.random() * (30 - 25 + 1)) + 20);
   position: relative;
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  break-inside: avoid;
 }
 
 .skeleton-img {
