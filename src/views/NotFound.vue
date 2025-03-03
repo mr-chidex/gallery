@@ -1,5 +1,13 @@
 <script setup>
 import Wrapper from "@/components/Wrapper.vue";
+import { useHead } from "@vueuse/head";
+
+useHead({
+  title: "Image Gallery: Page Not Found",
+  meta: [
+    { name: "description", content: "A beautiful image gallery with smooth animations." },
+  ],
+});
 </script>
 
 <template>

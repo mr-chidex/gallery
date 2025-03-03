@@ -47,10 +47,10 @@ const closeSlider = () => {
       </swiper-slide>
     </swiper>
 
-    <button class="custom-prev">
+    <button :disabled="activeIndex === 0" class="custom-prev">
       <vue-feather type="chevron-left" size="20" stroke="2" class="custom-prev__icon" />
     </button>
-    <button class="custom-next">
+    <button :disabled="activeIndex === photos.length - 1" class="custom-next">
       <vue-feather type="chevron-right" size="20" stroke="2" class="custom-next__icon" />
     </button>
   </div>
@@ -164,15 +164,30 @@ const closeSlider = () => {
 
 .custom-prev {
   left: 5rem;
+
+  &:hover {
+    background-color: #e0e0e0cc;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 .custom-next {
   right: 5rem;
-}
 
-.custom-prev:hover,
-.custom-next:hover {
-  background-color: #e0e0e0cc;
+  &:hover {
+    background-color: #e0e0e0cc;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 .swiper-button-next,

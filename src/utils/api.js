@@ -10,7 +10,7 @@ const unsplashApi = axios.create({
 export const getAllPhotos = async (page = 1, perPage = 10) => {
   try {
     const response = await unsplashApi.get("/photos", {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage, query: "africa" },
     });
 
     return response.data;

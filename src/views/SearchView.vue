@@ -7,6 +7,14 @@ import { onMounted, ref, nextTick } from "vue";
 import { searchPhotos } from "@/utils/api";
 import { assignRowSpans } from "@/utils/handlers";
 import ImageSlider from "@/components/ImageSlider.vue";
+import { useHead } from "@vueuse/head";
+
+useHead({
+  title: "Image Gallery: Search query",
+  meta: [
+    { name: "description", content: "A beautiful image gallery with smooth animations." },
+  ],
+});
 
 const route = useRoute();
 const searchQuery = route.query.q;
@@ -23,7 +31,7 @@ const fetchPhotos = async () => {
   loading.value = true;
 
   if (!searchQuery) return;
-  const { total, results } = await searchPhotos(searchQuery, page, 20);
+  const { total, results } = await searchPhotos(searchQuery, page, 8);
   totalResult.value = total;
 
   if (results?.length > 0) {
@@ -57,6 +65,10 @@ onMounted(async () => {
     </template>
 
     <template #main>
+      <div v-if="loading && photos.length === 0" class="skeleton-container">
+        <SkeletonLoader v-for="n in 6" :key="n" />
+      </div>
+
       <div class="masonry-grid">
         <MasonryItem
           v-for="(photo, index) in photos"
@@ -67,24 +79,22 @@ onMounted(async () => {
         />
       </div>
 
-      <div v-if="loading && photos.length === 0" class="skeleton-container">
-        <SkeletonLoader v-for="n in 6" :key="n" />
-      </div>
-
       <!-- Image Slider Modal -->
-      <ImageSlider
-        v-if="showSlider"
-        :photos="photos"
-        :currentIndex="currentIndex"
-        @close="showSlider = false"
-      />
+      <Transition name="slide-fade">
+        <ImageSlider
+          v-if="showSlider"
+          :photos="photos"
+          :currentIndex="currentIndex"
+          @close="showSlider = false"
+        />
+      </Transition>
 
       <div v-if="!loading && photos.length === 0" class="empty">
         <p>No photo available at this moment.</p>
       </div>
 
       <button
-        v-show="!loading && photos.length > 0 && !isNoMore"
+        v-show="photos.length > 0 && !isNoMore"
         type="button"
         @click="fetchPhotos"
         :disabled="loading"
@@ -147,5 +157,19 @@ h1 {
   column-gap: 10px;
   row-gap: 10px;
   column-gap: 3rem;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 </style>
